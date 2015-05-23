@@ -122,7 +122,7 @@
                 [_downView setPullState:CYPullStatePulling];
             }
         } else if (_scrollView.contentSize.height >= _scrollView.frame.size.height) {
-            CGFloat viewOffset = _scrollView.contentOffset.y + _scrollView.frame.size.height - topInset - 5 - _scrollView.contentSize.height;
+            CGFloat viewOffset = _scrollView.contentOffset.y + _scrollView.frame.size.height - 5 - _scrollView.contentSize.height;
             if (viewOffset > 0 && _downView.pullState != CYPullStateLoading) {
                 [_downView setPullState:CYPullStateLoading];
                 [self loadWithState:PullUpLoadState];
