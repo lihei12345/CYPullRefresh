@@ -1,8 +1,8 @@
 # CYPullRefresh
 use pull-refresh and load-more easily
 
-# use
-First, It's very easy to implement pull-refresh and load-more feature by this. Just import UIScrollView+CYPullRefresh category. Init by two lines of code.
+## basic use
+First, It's very easy to implement pull-refresh and load-more feature by CYPullRefresh. Just import UIScrollView+CYPullRefresh category. Init by two lines of code.
 ```objective-c
 - (void)cy_addPullDownHanlder:(CYPullRefreshBlock)handler topView:(UIView<CYPullRefreshViewProtocol> *)topView;
 - (void)cy_addPullUpHandler:(CYPullRefreshBlock)handler bottomView:(UIView<CYPullRefreshViewProtocol> *)bottomView;
@@ -46,8 +46,10 @@ see demo project to get complete sample code
     [_theTableView cy_setHasMoreData:dataArray.count >= _limitNum ? YES : NO];
 ```
 
-# custom loading view
-You can custom your pull refresh view by creating a custom view confirming to CYPullRefreshViewProtocol. For different state, load different UI.
-For more information, you can see CYPullRefreshSimpleTopView and CYPullRefreshSimpleBottomView. 
-In this way, you can do something very useful without changing source code of CYPullRefresh.
+## custom loading view
+You can custom your pull refresh view by creating a custom view confirming to CYPullRefreshViewProtocol. For different state, load different UI.For more information, see CYPullRefreshSimpleTopView and CYPullRefreshSimpleBottomView. 
 
+In this way, you can do high customization without changing source code of CYPullRefresh. 
+
+## CocoaPods
+`pod 'CYPullRefresh'`
