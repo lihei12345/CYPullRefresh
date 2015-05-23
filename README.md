@@ -9,8 +9,7 @@ First, It's very easy to implement pull-refresh and load-more feature by CYPullR
 ```
 
 ## sample
-see demo project to get complete sample code
-### setup
+`see demo project`
 ```objective-c
     CYPullRefreshSimpleBottomView *bottomView = [[CYPullRefreshSimpleBottomView alloc] init];
     CYPullRefreshSimpleTopView *topView = [[CYPullRefreshSimpleTopView alloc] init];
@@ -33,6 +32,7 @@ see demo project to get complete sample code
     [_theTableView cy_triggerLoadWithState:PullDownLoadState];
 ```
 ### reloadData
+add this after finish loading data
 ```objective-c
     [_theTableView reloadData];
     [_theTableView cy_stopLoadWithState:PullDownLoadState];
@@ -40,6 +40,7 @@ see demo project to get complete sample code
     [_theTableView cy_setPullUpEnable:YES];
 ```
 ### loadMore
+add this after finish loading data
 ```objective-c
     [_theTableView reloadData];
     [_theTableView cy_stopLoadWithState:PullUpLoadState];
