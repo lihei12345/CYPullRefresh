@@ -111,19 +111,18 @@
 {
     BOOL isLoading = self.isLoading;
     CGFloat topInset = _scrollView.contentInset.top;
-    CGFloat bottomInset = _scrollView.contentInset.bottom;
     
     // 处理上拉
     if (self.pullUpEnable && _downView.pullState != CYPullStateNoMore) {
         if (_scrollView.dragging && _scrollView.contentSize.height < _scrollView.frame.size.height) {
-            CGFloat viewOffset = _scrollView.contentOffset.y + bottomInset - _downView.contentHeight;
+            CGFloat viewOffset = _scrollView.contentOffset.y + topInset - _downView.contentHeight;
             if (viewOffset >= 0) {
                 [_downView setPullState:CYPullStateHitTheEnd];
             } else {
                 [_downView setPullState:CYPullStatePulling];
             }
         } else if (_scrollView.contentSize.height >= _scrollView.frame.size.height) {
-            CGFloat viewOffset = _scrollView.contentOffset.y + _scrollView.frame.size.height  - topInset - _scrollView.contentSize.height;
+            CGFloat viewOffset = _scrollView.contentOffset.y + _scrollView.frame.size.height - topInset - 5 - _scrollView.contentSize.height;
             if (viewOffset > 0 && _downView.pullState != CYPullStateLoading) {
                 [_downView setPullState:CYPullStateLoading];
                 [self loadWithState:PullUpLoadState];
@@ -145,10 +144,11 @@
 - (void)cy_scrollViewDidEndDragging
 {
     BOOL isLoading = self.isLoading;
+    CGFloat topInset = _scrollView.contentInset.top;
+    
     // 处理上拉
     if (self.pullUpEnable && _downView.pullState != CYPullStateNoMore) {
-        CGFloat bottomInset = _scrollView.contentInset.bottom;
-        CGFloat viewOffset = _scrollView.contentOffset.y + bottomInset - _downView.contentHeight;
+        CGFloat viewOffset = _scrollView.contentOffset.y + topInset - _downView.contentHeight;
         if (viewOffset >= 0 && _downView.pullState == CYPullStateHitTheEnd && !isLoading) {
             [_downView setPullState:CYPullStateLoading];
             [self loadWithState:PullUpLoadState];
@@ -158,7 +158,6 @@
     // 处理下拉
     if (self.pullDownEnable) {
         CGFloat viewOffset = _scrollView.contentOffset.y;
-        CGFloat topInset = _scrollView.contentInset.top;
         if (viewOffset < - _upView.contentHeight - topInset && !isLoading) {
             [_upView setPullState:CYPullStateLoading];
             [self loadWithState:PullDownLoadState];
