@@ -34,7 +34,7 @@ First, It's very easy to implement pull-refresh and load-more feature by CYPullR
     
     _theTableView = tableView;
     
-    [_theTableView cy_triggerLoadWithState:PullDownLoadState];
+    [_theTableView cy_triggerLoadWithState:CYLoadStatePullDown];
 ```
 ### reloadData
 add this after finish loading data
