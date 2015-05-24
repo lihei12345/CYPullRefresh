@@ -128,6 +128,7 @@
 - (void)removeAllObservers
 {
     if (_isObserving) {
+        // cannot user _scrollView here, becauser it's weak property
         UIScrollView *scrollView = (UIScrollView *)self.superview;
         [scrollView removeObserver:self forKeyPath:@"contentOffset" context:CYPullRefreshManagerContext];
         [scrollView removeObserver:self forKeyPath:@"contentSize" context:CYPullRefreshManagerContext];
