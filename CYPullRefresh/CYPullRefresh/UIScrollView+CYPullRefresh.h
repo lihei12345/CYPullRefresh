@@ -56,4 +56,6 @@ typedef void (^CYPullRefreshBlock)();
 - (void)cy_setPullDownEnable:(BOOL)enable;
 - (BOOL)cy_getPullDownEnable;
 
+- (void)cy_clearPullLoad;
+
 @end

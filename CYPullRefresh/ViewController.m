@@ -36,22 +36,28 @@
     CYPullRefreshSimpleBottomView *bottomView = [[CYPullRefreshSimpleBottomView alloc] init];
     CYPullRefreshSimpleTopView *topView = [[CYPullRefreshSimpleTopView alloc] init];
     
+    __weak typeof(&*self) weakself = self;
     UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
     tableView.backgroundView = nil;
     tableView.delegate = self;
     tableView.dataSource = self;
     [tableView cy_addPullDownHanlder:^{
-        [self reloadData];
+        [weakself reloadData];
     } topView:topView];
     [tableView cy_addPullUpHandler:^{
-        [self loadMore];
+        [weakself loadMore];
     } bottomView:bottomView];
     [tableView cy_setPullUpEnable:NO];
     [self.view addSubview:tableView];
-    
     _theTableView = tableView;
     
     [_theTableView cy_triggerLoadWithState:CYLoadStatePullDown];
+}
+
+- (void)dealloc
+{
+    NSLog(@"ViewController dealloc");
+    [_theTableView cy_clearPullLoad];
 }
 
 #pragma mark - network
@@ -74,7 +80,7 @@
 - (void)reloadData
 {
     _startIndex = 0;
-    [self performSelector:@selector(doneReload) withObject:nil afterDelay:5];
+    [self performSelector:@selector(doneReload) withObject:nil afterDelay:1.5];
 }
 
 - (void)doneLoadMore
@@ -98,7 +104,7 @@
 
 - (void)loadMore
 {
-    [self performSelector:@selector(doneLoadMore) withObject:nil afterDelay:5];
+    [self performSelector:@selector(doneLoadMore) withObject:nil afterDelay:1.5];
 }
 
 #pragma mark - UITableViewDataSource & UITableViewDelegate
@@ -126,6 +132,12 @@
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
 //    NSLog(@"offset : %@", @(scrollView.contentOffset.y));
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    ViewController *viewController = [[ViewController alloc] init];
+    [self.navigationController pushViewController:viewController animated:YES];
 }
 
 @end

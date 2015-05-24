@@ -109,6 +109,12 @@
     [_scrollView.panGestureRecognizer addTarget:self action:@selector(gestureRecognizerUpdate:)];
 }
 
+- (void)removeAllObservers
+{
+    [_scrollView removeObserver:self forKeyPath:@"contentOffset" context:CYPullRefreshManagerContext];
+    [_scrollView removeObserver:self forKeyPath:@"contentSize" context:CYPullRefreshManagerContext];
+}
+
 - (void)cy_scrollViewDidScroll
 {
     BOOL isLoading = (self.currentLoadState != CYLoadStateNone);
@@ -176,6 +182,11 @@ static const char *cy_pullRefreshManagerKey = "cy_pullRefreshManagerKey";
 
 #pragma mark - helper
 
+- (CYPullRefreshManager *)cy_getAssociatedPullRefreshManager
+{
+    return objc_getAssociatedObject(self, &cy_pullRefreshManagerKey);
+}
+
 - (void)cy_setPullRefreshManager:(CYPullRefreshManager *)pullRefreshManager
 {
     objc_setAssociatedObject(self, &cy_pullRefreshManagerKey, pullRefreshManager, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -183,7 +194,7 @@ static const char *cy_pullRefreshManagerKey = "cy_pullRefreshManagerKey";
 
 - (CYPullRefreshManager *)cy_pullRefreshManager
 {
-    CYPullRefreshManager *manager = objc_getAssociatedObject(self, &cy_pullRefreshManagerKey);
+    CYPullRefreshManager *manager = [self cy_getAssociatedPullRefreshManager];
     if (!manager) {
         manager = [[CYPullRefreshManager alloc] initWithScrollView:self];
         [self cy_setPullRefreshManager:manager];
@@ -202,12 +213,13 @@ static const char *cy_pullRefreshManagerKey = "cy_pullRefreshManagerKey";
     }
     
     topView.frame = CGRectMake(0, -300, self.frame.size.width, 300);
+    __weak typeof(&*self) weakself = self;
     [topView setTriggerLoadingStateBlock:^(UIView<CYPullRefreshViewProtocol> *topView, BOOL animated) {
-        [self.cy_pullRefreshManager loadWithState:CYLoadStatePullDown];
+        [weakself.cy_pullRefreshManager loadWithState:CYLoadStatePullDown];
         void (^block)() = ^{
-            UIEdgeInsets insets = self.contentInset;
-            insets = UIEdgeInsetsMake(insets.top + self.cy_pullRefreshManager.upView.contentHeight, 0, insets.bottom, 0);
-            [self setContentInset:insets];
+            UIEdgeInsets insets = weakself.contentInset;
+            insets = UIEdgeInsetsMake(insets.top + weakself.cy_pullRefreshManager.upView.contentHeight, 0, insets.bottom, 0);
+            [weakself setContentInset:insets];
         };
         if (animated) {
             [UIView animateWithDuration:0.2f animations:block];
@@ -230,13 +242,13 @@ static const char *cy_pullRefreshManagerKey = "cy_pullRefreshManagerKey";
         self.cy_pullRefreshManager.downView = nil;
     }
     
+    __weak typeof(&*self) weakself = self;
     [bottomView setTriggerLoadingStateBlock:^(UIView<CYPullRefreshViewProtocol> *bottomView, BOOL animated) {
-        [self.cy_pullRefreshManager loadWithState:CYLoadStatePullUp];
-        
+        [weakself.cy_pullRefreshManager loadWithState:CYLoadStatePullUp];
         void (^block)() = ^{
-            UIEdgeInsets insets = self.contentInset;
+            UIEdgeInsets insets = weakself.contentInset;
             insets = UIEdgeInsetsMake(insets.top, 0, insets.bottom + bottomView.contentHeight, 0);
-            [self setContentInset:insets];
+            [weakself setContentInset:insets];
         };
         if (animated) {
             [UIView animateWithDuration:0.2f animations:block];
@@ -320,6 +332,12 @@ static const char *cy_pullRefreshManagerKey = "cy_pullRefreshManagerKey";
 - (BOOL)cy_getPullDownEnable
 {
     return self.cy_pullRefreshManager.pullDownEnable;
+}
+
+- (void)cy_clearPullLoad
+{
+    [[self cy_getAssociatedPullRefreshManager] removeAllObservers];
+    [self cy_setPullRefreshManager:nil];
 }
 
 @end
