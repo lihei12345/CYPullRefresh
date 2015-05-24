@@ -1,11 +1,6 @@
 # CYPullRefresh
 use pull-refresh and load-more easily
 
-
-![img](https://cloud.githubusercontent.com/assets/1996801/7785011/266779e8-01af-11e5-8872-40bd7fba763a.png)
-![img](https://cloud.githubusercontent.com/assets/1996801/7785008/07c8c0b4-01af-11e5-8067-40f7d2afd76c.png)
-![img](https://cloud.githubusercontent.com/assets/1996801/7785012/32a0a7fc-01af-11e5-96bd-cd863c3ed9ee.png)
-
 ## basic use
 First, It's very easy to implement pull-refresh and load-more feature by CYPullRefresh. Just import UIScrollView+CYPullRefresh category. Init by two lines of code.
 ```objective-c
@@ -59,3 +54,7 @@ In this way, you can do high customization without changing source code of CYPul
 
 ## CocoaPods
 `pod 'CYPullRefresh'`
+
+![img](https://cloud.githubusercontent.com/assets/1996801/7785011/266779e8-01af-11e5-8872-40bd7fba763a.png)
+![img](https://cloud.githubusercontent.com/assets/1996801/7785008/07c8c0b4-01af-11e5-8067-40f7d2afd76c.png)
+![img](https://cloud.githubusercontent.com/assets/1996801/7785012/32a0a7fc-01af-11e5-96bd-cd863c3ed9ee.png)
