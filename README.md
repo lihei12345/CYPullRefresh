@@ -13,22 +13,22 @@ First, It's very easy to implement pull-refresh and load-more feature by CYPullR
 ```objective-c
     CYPullRefreshSimpleBottomView *bottomView = [[CYPullRefreshSimpleBottomView alloc] init];
     CYPullRefreshSimpleTopView *topView = [[CYPullRefreshSimpleTopView alloc] init];
-    
+
+    __weak typeof(&*self) weakself = self;
     UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
     tableView.backgroundView = nil;
     tableView.delegate = self;
     tableView.dataSource = self;
     [tableView cy_addPullDownHanlder:^{
-        [self reloadData];
+        [weakself reloadData];
     } topView:topView];
     [tableView cy_addPullUpHandler:^{
-        [self loadMore];
+        [weakself loadMore];
     } bottomView:bottomView];
     [tableView cy_setPullUpEnable:NO];
     [self.view addSubview:tableView];
-    
     _theTableView = tableView;
-    
+
     [_theTableView cy_triggerLoadWithState:CYLoadStatePullDown];
 ```
 ### reloadData
