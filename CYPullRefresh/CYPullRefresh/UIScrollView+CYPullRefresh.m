@@ -13,7 +13,9 @@
 
 #define CYPullRefreshManagerContext @"CYPullRefreshManagerContext"
 
-@interface CYPullRefreshManager : NSObject
+@interface CYPullRefreshManager : UIView {
+    BOOL _isObserving;
+}
 
 @property (nonatomic, weak, readonly) UIScrollView *scrollView;
 @property (nonatomic, strong) UIView<CYPullRefreshViewProtocol> *upView;
@@ -34,6 +36,7 @@
     self = [super init];
     if (self) {
         NSAssert(scrollView != nil && [scrollView isKindOfClass:[UIScrollView class]], @"scroll view must not be nil");
+        [scrollView addSubview:self];
         
         _scrollView = scrollView;
         _currentLoadState = CYLoadStateNone;
@@ -81,6 +84,15 @@
 
 #pragma mark - observer
 
+- (void)willMoveToSuperview:(UIView *)newSuperview
+{
+    if (newSuperview == nil) {
+        [self removeAllObservers];
+    }
+    
+    [super willMoveToSuperview:newSuperview];
+}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == CYPullRefreshManagerContext) {
@@ -103,16 +115,24 @@
 
 - (void)setupObserver
 {
-    [_scrollView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:CYPullRefreshManagerContext];
-    [_scrollView addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew context:CYPullRefreshManagerContext];
-    // dragging property is not KVO-compliant: http://stackoverflow.com/questions/14817047/how-to-detect-the-drag-end-event-of-an-uitableview/24358388#24358388
-    [_scrollView.panGestureRecognizer addTarget:self action:@selector(gestureRecognizerUpdate:)];
+    if (!_isObserving) {
+        _isObserving = YES;
+        
+        [_scrollView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:CYPullRefreshManagerContext];
+        [_scrollView addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew context:CYPullRefreshManagerContext];
+        // dragging property is not KVO-compliant: http://stackoverflow.com/questions/14817047/how-to-detect-the-drag-end-event-of-an-uitableview/24358388#24358388
+        [_scrollView.panGestureRecognizer addTarget:self action:@selector(gestureRecognizerUpdate:)];
+    }
 }
 
 - (void)removeAllObservers
 {
-    [_scrollView removeObserver:self forKeyPath:@"contentOffset" context:CYPullRefreshManagerContext];
-    [_scrollView removeObserver:self forKeyPath:@"contentSize" context:CYPullRefreshManagerContext];
+    if (_isObserving) {
+        UIScrollView *scrollView = (UIScrollView *)self.superview;
+        [scrollView removeObserver:self forKeyPath:@"contentOffset" context:CYPullRefreshManagerContext];
+        [scrollView removeObserver:self forKeyPath:@"contentSize" context:CYPullRefreshManagerContext];
+        _isObserving = NO;
+    }
 }
 
 - (void)cy_scrollViewDidScroll
@@ -332,12 +352,6 @@ static const char *cy_pullRefreshManagerKey = "cy_pullRefreshManagerKey";
 - (BOOL)cy_getPullDownEnable
 {
     return self.cy_pullRefreshManager.pullDownEnable;
-}
-
-- (void)cy_clearPullLoad
-{
-    [[self cy_getAssociatedPullRefreshManager] removeAllObservers];
-    [self cy_setPullRefreshManager:nil];
 }
 
 @end

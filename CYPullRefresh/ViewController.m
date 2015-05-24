@@ -57,7 +57,6 @@
 - (void)dealloc
 {
     NSLog(@"ViewController dealloc");
-    [_theTableView cy_clearPullLoad];
 }
 
 #pragma mark - network
