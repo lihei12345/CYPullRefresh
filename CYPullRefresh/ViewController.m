@@ -51,7 +51,7 @@
     
     _theTableView = tableView;
     
-    [_theTableView cy_triggerLoadWithState:CYPullDownLoadState];
+    [_theTableView cy_triggerLoadWithState:CYLoadStatePullDown];
 }
 
 #pragma mark - network
@@ -125,7 +125,7 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    NSLog(@"offset : %@", @(scrollView.contentOffset.y));
+//    NSLog(@"offset : %@", @(scrollView.contentOffset.y));
 }
 
 @end

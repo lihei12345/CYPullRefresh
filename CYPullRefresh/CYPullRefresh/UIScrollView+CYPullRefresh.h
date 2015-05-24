@@ -28,18 +28,14 @@ typedef NS_ENUM (NSUInteger, CYPullState) {
 - (void)setPullState:(CYPullState)pullstate animated:(BOOL)animated;
 - (CGFloat)contentHeight;
 
-@optional
-- (void)cy_scrollViewDidScroll:(UIScrollView *)scrollView;
-- (void)cy_scrollViewDidEndDragging:(UIScrollView *)scrollView;
-
 @end
 
 #pragma mark - UIScrollView+CYPullRefresh -
 
 typedef NS_ENUM(NSUInteger, CYLoadState) {
     CYLoadStateNone,
-    CYPullUpLoadState,
-    CYPullDownLoadState,
+    CYLoadStatePullUp,
+    CYLoadStatePullDown,
 };
 
 typedef void (^CYPullRefreshBlock)();

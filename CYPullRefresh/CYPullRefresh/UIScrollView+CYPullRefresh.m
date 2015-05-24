@@ -54,7 +54,7 @@
 - (void)loadWithState:(CYLoadState)state
 {
     self.currentLoadState = state;
-    if (state == CYPullUpLoadState) {
+    if (state == CYLoadStatePullUp) {
         CYPullRefreshBlock block = [self pullUpBlock];
         if (block) {
             block();
@@ -127,7 +127,6 @@
             CGFloat viewOffset = _scrollView.contentOffset.y + _scrollView.frame.size.height - _scrollView.contentInset.bottom - 5 - _scrollView.contentSize.height;
             if (viewOffset > 0 && _downView.pullState != CYPullStateLoading) {
                 [_downView setPullState:CYPullStateLoading];
-                [self loadWithState:CYPullUpLoadState];
             }
         }
     }
@@ -153,7 +152,6 @@
         CGFloat viewOffset = _scrollView.contentOffset.y + topInset - _downView.contentHeight;
         if (viewOffset >= 0 && _downView.pullState == CYPullStateHitTheEnd) {
             [_downView setPullState:CYPullStateLoading];
-            [self loadWithState:CYPullUpLoadState];
         }
     }
     
@@ -162,7 +160,6 @@
         CGFloat viewOffset = _scrollView.contentOffset.y;
         if (viewOffset < - _upView.contentHeight - topInset) {
             [_upView setPullState:CYPullStateLoading];
-            [self loadWithState:CYPullDownLoadState];
         } else if (!isLoading) {
             [_upView setPullState:CYPullStateNormal];
         }
@@ -206,8 +203,7 @@ static const char *cy_pullRefreshManagerKey = "cy_pullRefreshManagerKey";
     
     topView.frame = CGRectMake(0, -300, self.frame.size.width, 300);
     [topView setTriggerLoadingStateBlock:^(UIView<CYPullRefreshViewProtocol> *topView, BOOL animated) {
-        [self.cy_pullRefreshManager setCurrentLoadState:CYPullDownLoadState];
-        
+        [self.cy_pullRefreshManager loadWithState:CYLoadStatePullDown];
         void (^block)() = ^{
             UIEdgeInsets insets = self.contentInset;
             insets = UIEdgeInsetsMake(insets.top + self.cy_pullRefreshManager.upView.contentHeight, 0, insets.bottom, 0);
@@ -235,7 +231,7 @@ static const char *cy_pullRefreshManagerKey = "cy_pullRefreshManagerKey";
     }
     
     [bottomView setTriggerLoadingStateBlock:^(UIView<CYPullRefreshViewProtocol> *bottomView, BOOL animated) {
-        [self.cy_pullRefreshManager setCurrentLoadState:CYPullUpLoadState];
+        [self.cy_pullRefreshManager loadWithState:CYLoadStatePullUp];
         
         void (^block)() = ^{
             UIEdgeInsets insets = self.contentInset;
@@ -272,14 +268,14 @@ static const char *cy_pullRefreshManagerKey = "cy_pullRefreshManagerKey";
 
 - (void)cy_stopLoad
 {
-    if (self.cy_pullRefreshManager.currentLoadState == CYPullDownLoadState && self.cy_pullRefreshManager.upView.pullState == CYPullStateLoading) {
+    if (self.cy_pullRefreshManager.currentLoadState == CYLoadStatePullDown && self.cy_pullRefreshManager.upView.pullState == CYPullStateLoading) {
         [UIView animateWithDuration:0.2 animations:^{
             UIEdgeInsets insets = self.contentInset;
             insets = UIEdgeInsetsMake(insets.top - self.cy_pullRefreshManager.upView.contentHeight, 0, insets.bottom, 0);
             [self setContentInset:insets];
         }];
         [self.cy_pullRefreshManager.upView setPullState:CYPullStateNormal];;
-    } else if (self.cy_pullRefreshManager.currentLoadState == CYPullUpLoadState && self.cy_pullRefreshManager.downView.pullState == CYPullStateLoading) {
+    } else if (self.cy_pullRefreshManager.currentLoadState == CYLoadStatePullUp && self.cy_pullRefreshManager.downView.pullState == CYPullStateLoading) {
         [UIView animateWithDuration:0.2 animations:^{
             UIEdgeInsets insets = self.contentInset;
             insets = UIEdgeInsetsMake(insets.top, 0, insets.bottom - self.cy_pullRefreshManager.downView.contentHeight, 0);
@@ -293,20 +289,16 @@ static const char *cy_pullRefreshManagerKey = "cy_pullRefreshManagerKey";
 
 - (void)cy_triggerLoadWithState:(CYLoadState)state
 {
-    if (state == CYPullDownLoadState && [self.cy_pullRefreshManager pullDownEnable]) {
+    if (state == CYLoadStatePullDown && [self.cy_pullRefreshManager pullDownEnable]) {
         [UIView animateWithDuration:0.2 animations:^{
             [self.cy_pullRefreshManager.upView setPullState:CYPullStateLoading animated:NO];
             self.contentOffset = CGPointMake(0, - self.contentInset.top);
         }];
-        [self.cy_pullRefreshManager loadWithState:CYPullDownLoadState];
-    } else if (state == CYPullUpLoadState && [self.cy_pullRefreshManager pullUpEnable]) {
+    } else if (state == CYLoadStatePullUp && [self.cy_pullRefreshManager pullUpEnable]) {
         [UIView animateWithDuration:0.2 animations:^{
             [self.cy_pullRefreshManager.downView setPullState:CYPullStateLoading animated:NO];
             self.contentOffset = CGPointMake(0, self.contentInset.bottom + self.contentSize.height);
         }];
-        if (self.cy_pullRefreshManager.downView) {
-            [self.cy_pullRefreshManager.downView setFrame:CGRectMake(0, self.contentSize.height, self.frame.size.width, 300)];
-        }
     }
 }
 
