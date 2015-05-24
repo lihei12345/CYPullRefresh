@@ -3,7 +3,7 @@
 //  zuimei
 //
 //  Created by jason on 15/5/23.
-//  Copyright (c) 2015年 chenyang. All rights reserved.
+//  Copyright (c) 2015 chenyang. All rights reserved.
 //
 
 #import "CYPullRefreshSimpleTopView.h"
@@ -32,7 +32,7 @@
         self.backgroundColor = [UIColor clearColor];
         
         _stateLabel = [[UILabel alloc] init ];
-        _stateLabel.font = [UIFont fontWithName:@"ArialMT" size:14.f];
+        _stateLabel.font = [UIFont systemFontOfSize:14.f];
         _stateLabel.textColor = [UIColor colorWithRed:181.0/255.0 green:181.0/255.0 blue:181.0/255.0 alpha:1.0];
         _stateLabel.textAlignment = NSTextAlignmentLeft;
         _stateLabel.backgroundColor = [UIColor clearColor];

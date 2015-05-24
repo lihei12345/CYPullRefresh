@@ -3,7 +3,7 @@
 //  zuimei
 //
 //  Created by jason on 15/5/23.
-//  Copyright (c) 2015年 chenyang. All rights reserved.
+//  Copyright (c) 2015 chenyang. All rights reserved.
 //
 
 #import "CYPullRefreshSimpleBottomView.h"

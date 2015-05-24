@@ -3,7 +3,7 @@
 //  CYPullRefresh
 //
 //  Created by jason on 15/5/22.
-//  Copyright (c) 2015年 chenyang. All rights reserved.
+//  Copyright (c) 2015 chenyang. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -21,19 +21,25 @@ typedef NS_ENUM (NSUInteger, CYPullState) {
 
 @protocol CYPullRefreshViewProtocol <NSObject>
 
+@required
 @property (nonatomic, assign) CYPullState pullState;
 @property (nonatomic, copy) void (^triggerLoadingStateBlock)(UIView<CYPullRefreshViewProtocol> *view, BOOL animated);
 
 - (void)setPullState:(CYPullState)pullstate animated:(BOOL)animated;
 - (CGFloat)contentHeight;
 
+@optional
+- (void)cy_scrollViewDidScroll:(UIScrollView *)scrollView;
+- (void)cy_scrollViewDidEndDragging:(UIScrollView *)scrollView;
+
 @end
 
 #pragma mark - UIScrollView+CYPullRefresh -
 
-typedef NS_ENUM(NSUInteger, LoadState) {
-    PullUpLoadState,
-    PullDownLoadState,
+typedef NS_ENUM(NSUInteger, CYLoadState) {
+    CYLoadStateNone,
+    CYPullUpLoadState,
+    CYPullDownLoadState,
 };
 
 typedef void (^CYPullRefreshBlock)();
@@ -43,8 +49,8 @@ typedef void (^CYPullRefreshBlock)();
 - (void)cy_addPullDownHanlder:(CYPullRefreshBlock)handler topView:(UIView<CYPullRefreshViewProtocol> *)topView;
 - (void)cy_addPullUpHandler:(CYPullRefreshBlock)handler bottomView:(UIView<CYPullRefreshViewProtocol> *)bottomView;
 
-- (void)cy_stopLoadWithState:(LoadState)state;
-- (void)cy_triggerLoadWithState:(LoadState)state;
+- (void)cy_stopLoad;
+- (void)cy_triggerLoadWithState:(CYLoadState)state;
 
 - (void)cy_setHasMoreData:(BOOL)hasMore;
 - (BOOL)cy_hasMoreData;

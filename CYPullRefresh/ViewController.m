@@ -51,7 +51,7 @@
     
     _theTableView = tableView;
     
-    [_theTableView cy_triggerLoadWithState:PullDownLoadState];
+    [_theTableView cy_triggerLoadWithState:CYPullDownLoadState];
 }
 
 #pragma mark - network
@@ -66,7 +66,7 @@
     _startIndex = [_dataArray count];
     
     [_theTableView reloadData];
-    [_theTableView cy_stopLoadWithState:PullDownLoadState];
+    [_theTableView cy_stopLoad];
     [_theTableView cy_setHasMoreData:_dataArray.count >= _limitNum ? YES : NO];
     [_theTableView cy_setPullUpEnable:YES];
 }
@@ -74,7 +74,7 @@
 - (void)reloadData
 {
     _startIndex = 0;
-    [self performSelector:@selector(doneReload) withObject:nil afterDelay:1.5];
+    [self performSelector:@selector(doneReload) withObject:nil afterDelay:5];
 }
 
 - (void)doneLoadMore
@@ -92,13 +92,13 @@
     _startIndex += [dataArray count];
     
     [_theTableView reloadData];
-    [_theTableView cy_stopLoadWithState:PullUpLoadState];
+    [_theTableView cy_stopLoad];
     [_theTableView cy_setHasMoreData:dataArray.count >= _limitNum ? YES : NO];
 }
 
 - (void)loadMore
 {
-    [self performSelector:@selector(doneLoadMore) withObject:nil afterDelay:1.5];
+    [self performSelector:@selector(doneLoadMore) withObject:nil afterDelay:5];
 }
 
 #pragma mark - UITableViewDataSource & UITableViewDelegate
