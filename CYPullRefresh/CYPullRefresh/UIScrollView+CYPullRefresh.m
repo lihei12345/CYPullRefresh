@@ -151,9 +151,17 @@
                 [_downView setPullState:CYPullStatePulling];
             }
         } else if (_scrollView.contentSize.height >= _scrollView.frame.size.height) {
-            CGFloat viewOffset = _scrollView.contentOffset.y + _scrollView.frame.size.height - _scrollView.contentInset.bottom - 5 - _scrollView.contentSize.height;
+            CGFloat viewOffset = _scrollView.contentOffset.y + topInset + _scrollView.frame.size.height - _scrollView.contentSize.height;
             if (viewOffset > 0 && _downView.pullState != CYPullStateLoading) {
-                [_downView setPullState:CYPullStateLoading];
+                if (viewOffset > _downView.contentHeight) {
+                    if (!_scrollView.isDragging) {
+                        [_downView setPullState:CYPullStateLoading];
+                    } else {
+                        [_downView setPullState:CYPullStateHitTheEnd];
+                    }
+                } else {
+                    [_downView setPullState:CYPullStateNormal];
+                }
             }
         }
     }
@@ -296,17 +304,27 @@ static const char *cy_pullRefreshManagerKey = "cy_pullRefreshManagerKey";
             UIEdgeInsets insets = self.contentInset;
             insets = UIEdgeInsetsMake(insets.top - self.cy_pullRefreshManager.upView.contentHeight, 0, insets.bottom, 0);
             [self setContentInset:insets];
+        } completion:^(BOOL finished) {
+            if (finished) {
+                [self.cy_pullRefreshManager.upView setPullState:CYPullStateNormal];
+                [self.cy_pullRefreshManager setCurrentLoadState:CYLoadStateNone];
+            }
         }];
-        [self.cy_pullRefreshManager.upView setPullState:CYPullStateNormal];;
     } else if (self.cy_pullRefreshManager.currentLoadState == CYLoadStatePullUp && self.cy_pullRefreshManager.downView.pullState == CYPullStateLoading) {
-        if (self.contentSize.height >= self.frame.size.height) {
-            CGFloat y = self.contentSize.height - self.frame.size.height - self.contentInset.top;
-            [self setContentOffset:CGPointMake(0, y) animated:NO];
-        }
-        [self.cy_pullRefreshManager.downView setPullState:CYPullStateNormal];
+        [UIView animateWithDuration:0.2 animations:^{
+            if (self.contentSize.height >= self.frame.size.height) {
+                CGFloat y = self.contentSize.height - self.frame.size.height - self.contentInset.top;
+                if (y <= self.contentOffset.y) {
+                    [self setContentOffset:CGPointMake(0, y) animated:NO];
+                }
+            }
+        } completion:^(BOOL finished) {
+            if (finished) {
+                [self.cy_pullRefreshManager.downView setPullState:CYPullStateNormal];
+                [self.cy_pullRefreshManager setCurrentLoadState:CYLoadStateNone];
+            }
+        }];
     }
-    
-    [self.cy_pullRefreshManager setCurrentLoadState:CYLoadStateNone];
 }
 
 - (void)cy_triggerLoadWithState:(CYLoadState)state
