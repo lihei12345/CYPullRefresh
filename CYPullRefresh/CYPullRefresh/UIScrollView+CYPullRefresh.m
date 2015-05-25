@@ -266,22 +266,12 @@ static const char *cy_pullRefreshManagerKey = "cy_pullRefreshManagerKey";
     __weak typeof(&*self) weakself = self;
     [bottomView setTriggerLoadingStateBlock:^(UIView<CYPullRefreshViewProtocol> *bottomView, BOOL animated) {
         [weakself.cy_pullRefreshManager loadWithState:CYLoadStatePullUp];
-        void (^block)() = ^{
-            UIEdgeInsets insets = weakself.contentInset;
-            insets = UIEdgeInsetsMake(insets.top, 0, insets.bottom + bottomView.contentHeight, 0);
-            [weakself setContentInset:insets];
-        };
-        if (animated) {
-            [UIView animateWithDuration:0.2f animations:block];
-        } else {
-            block();
-        }
     }];
     self.cy_pullRefreshManager.downView = bottomView;
     [self addSubview:self.cy_pullRefreshManager.downView];
     
+    [self cy_setPullUpEnable:YES];
     [self.cy_pullRefreshManager setPullUpBlock:handler];
-    [self.cy_pullRefreshManager setPullUpEnable:YES];
 }
 
 - (BOOL)cy_hasMoreData
@@ -309,11 +299,6 @@ static const char *cy_pullRefreshManagerKey = "cy_pullRefreshManagerKey";
         }];
         [self.cy_pullRefreshManager.upView setPullState:CYPullStateNormal];;
     } else if (self.cy_pullRefreshManager.currentLoadState == CYLoadStatePullUp && self.cy_pullRefreshManager.downView.pullState == CYPullStateLoading) {
-        [UIView animateWithDuration:0.2 animations:^{
-            UIEdgeInsets insets = self.contentInset;
-            insets = UIEdgeInsetsMake(insets.top, 0, insets.bottom - self.cy_pullRefreshManager.downView.contentHeight, 0);
-            [self setContentInset:insets];
-        }];
         [self.cy_pullRefreshManager.downView setPullState:CYPullStateNormal];
     }
     
@@ -322,6 +307,10 @@ static const char *cy_pullRefreshManagerKey = "cy_pullRefreshManagerKey";
 
 - (void)cy_triggerLoadWithState:(CYLoadState)state
 {
+    if (self.cy_pullRefreshManager.currentLoadState != CYLoadStateNone) {
+        [self cy_stopLoad];
+    }
+    
     if (state == CYLoadStatePullDown && [self.cy_pullRefreshManager pullDownEnable]) {
         [UIView animateWithDuration:0.2 animations:^{
             [self.cy_pullRefreshManager.upView setPullState:CYPullStateLoading animated:NO];
@@ -337,6 +326,17 @@ static const char *cy_pullRefreshManagerKey = "cy_pullRefreshManagerKey";
 
 - (void)cy_setPullUpEnable:(BOOL)enable
 {
+    if (self.cy_pullRefreshManager.pullUpEnable != enable) {
+        if (enable) {
+            UIEdgeInsets insets = self.contentInset;
+            insets = UIEdgeInsetsMake(insets.top, 0, insets.bottom + self.cy_pullRefreshManager.downView.contentHeight, 0);
+            [self setContentInset:insets];
+        } else {
+            UIEdgeInsets insets = self.contentInset;
+            insets = UIEdgeInsetsMake(insets.top, 0, insets.bottom - self.cy_pullRefreshManager.downView.contentHeight, 0);
+            [self setContentInset:insets];
+        }
+    }
     self.cy_pullRefreshManager.pullUpEnable = enable;
 }
 
