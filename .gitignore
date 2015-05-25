@@ -19,3 +19,4 @@ imeeta.xccheckout
 
 #CocoaPods
 Pods
+*.xccheckout

@@ -299,6 +299,10 @@ static const char *cy_pullRefreshManagerKey = "cy_pullRefreshManagerKey";
         }];
         [self.cy_pullRefreshManager.upView setPullState:CYPullStateNormal];;
     } else if (self.cy_pullRefreshManager.currentLoadState == CYLoadStatePullUp && self.cy_pullRefreshManager.downView.pullState == CYPullStateLoading) {
+        if (self.contentSize.height >= self.frame.size.height) {
+            CGFloat y = self.contentSize.height - self.frame.size.height - self.contentInset.top;
+            [self setContentOffset:CGPointMake(0, y) animated:NO];
+        }
         [self.cy_pullRefreshManager.downView setPullState:CYPullStateNormal];
     }
     
