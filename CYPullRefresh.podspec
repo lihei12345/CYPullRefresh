@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name         = 'CYPullRefresh'
-  spec.version      = '0.5'
+  spec.version      = '0.6'
   spec.authors      = 'Jason li'
   spec.homepage     = 'http://blog.csdn.net/lihei12345'
   spec.source       = { :git => 'https://github.com/lihei12345/CYPullRefresh.git', :tag => "#{spec.version}"}
@@ -14,5 +14,6 @@ Pod::Spec.new do |spec|
   spec.source_files = 'CYPullRefresh/CYPullRefresh/*.{h,m}'
   spec.platform     = :ios
   spec.requires_arc = true
+  spec.resources    = 'CYPullRefresh/CYPullRefresh/*.{png,jpg}'
   spec.ios.deployment_target = '6.0'
 end
