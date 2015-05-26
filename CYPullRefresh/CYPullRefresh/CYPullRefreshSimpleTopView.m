@@ -39,7 +39,7 @@
         [self addSubview:_stateLabel];
         
         _arrowImage = [[UIImageView alloc] init];
-        _arrowImage.image = [UIImage imageNamed:@"pull_refresh_arrow"];
+        _arrowImage.image = [UIImage imageNamed:@"cy_pull_refresh_arrow"];
         [self addSubview:_arrowImage];
         
         UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];

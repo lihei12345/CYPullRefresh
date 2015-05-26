@@ -14,10 +14,10 @@
 		962F012B1B0F7334009591C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 962F012A1B0F7334009591C7 /* Images.xcassets */; };
 		962F012E1B0F7334009591C7 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 962F012C1B0F7334009591C7 /* LaunchScreen.xib */; };
 		962F013A1B0F7334009591C7 /* CYPullRefreshTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 962F01391B0F7334009591C7 /* CYPullRefreshTests.m */; };
+		969D91321B1492280023BA09 /* cy_pull_refresh_arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 969D91311B1492280023BA09 /* cy_pull_refresh_arrow@2x.png */; };
 		96FE3B341B109E3D00687726 /* CYPullRefreshSimpleBottomView.m in Sources */ = {isa = PBXBuildFile; fileRef = 96FE3B2F1B109E3D00687726 /* CYPullRefreshSimpleBottomView.m */; };
 		96FE3B351B109E3D00687726 /* CYPullRefreshSimpleTopView.m in Sources */ = {isa = PBXBuildFile; fileRef = 96FE3B311B109E3D00687726 /* CYPullRefreshSimpleTopView.m */; };
 		96FE3B361B109E3D00687726 /* UIScrollView+CYPullRefresh.m in Sources */ = {isa = PBXBuildFile; fileRef = 96FE3B331B109E3D00687726 /* UIScrollView+CYPullRefresh.m */; };
-		96FE3B381B10A11300687726 /* pull_refresh_arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 96FE3B371B10A11300687726 /* pull_refresh_arrow@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,13 +44,13 @@
 		962F01331B0F7334009591C7 /* CYPullRefreshTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CYPullRefreshTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		962F01381B0F7334009591C7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		962F01391B0F7334009591C7 /* CYPullRefreshTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CYPullRefreshTests.m; sourceTree = "<group>"; };
+		969D91311B1492280023BA09 /* cy_pull_refresh_arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cy_pull_refresh_arrow@2x.png"; sourceTree = "<group>"; };
 		96FE3B2E1B109E3D00687726 /* CYPullRefreshSimpleBottomView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CYPullRefreshSimpleBottomView.h; sourceTree = "<group>"; };
 		96FE3B2F1B109E3D00687726 /* CYPullRefreshSimpleBottomView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CYPullRefreshSimpleBottomView.m; sourceTree = "<group>"; };
 		96FE3B301B109E3D00687726 /* CYPullRefreshSimpleTopView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CYPullRefreshSimpleTopView.h; sourceTree = "<group>"; };
 		96FE3B311B109E3D00687726 /* CYPullRefreshSimpleTopView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CYPullRefreshSimpleTopView.m; sourceTree = "<group>"; };
 		96FE3B321B109E3D00687726 /* UIScrollView+CYPullRefresh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+CYPullRefresh.h"; sourceTree = "<group>"; };
 		96FE3B331B109E3D00687726 /* UIScrollView+CYPullRefresh.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+CYPullRefresh.m"; sourceTree = "<group>"; };
-		96FE3B371B10A11300687726 /* pull_refresh_arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pull_refresh_arrow@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,7 +96,6 @@
 				962F01221B0F7334009591C7 /* AppDelegate.m */,
 				962F01241B0F7334009591C7 /* ViewController.h */,
 				962F01251B0F7334009591C7 /* ViewController.m */,
-				96FE3B371B10A11300687726 /* pull_refresh_arrow@2x.png */,
 				96FE3B2D1B109E3D00687726 /* CYPullRefresh */,
 				962F01271B0F7334009591C7 /* Main.storyboard */,
 				962F012A1B0F7334009591C7 /* Images.xcassets */,
@@ -135,6 +134,7 @@
 		96FE3B2D1B109E3D00687726 /* CYPullRefresh */ = {
 			isa = PBXGroup;
 			children = (
+				969D91311B1492280023BA09 /* cy_pull_refresh_arrow@2x.png */,
 				96FE3B2E1B109E3D00687726 /* CYPullRefreshSimpleBottomView.h */,
 				96FE3B2F1B109E3D00687726 /* CYPullRefreshSimpleBottomView.m */,
 				96FE3B301B109E3D00687726 /* CYPullRefreshSimpleTopView.h */,
@@ -226,9 +226,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				962F01291B0F7334009591C7 /* Main.storyboard in Resources */,
+				969D91321B1492280023BA09 /* cy_pull_refresh_arrow@2x.png in Resources */,
 				962F012E1B0F7334009591C7 /* LaunchScreen.xib in Resources */,
 				962F012B1B0F7334009591C7 /* Images.xcassets in Resources */,
-				96FE3B381B10A11300687726 /* pull_refresh_arrow@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
