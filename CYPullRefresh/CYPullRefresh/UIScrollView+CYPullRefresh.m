@@ -154,7 +154,7 @@
             CGFloat viewOffset = _scrollView.contentOffset.y + topInset + _scrollView.frame.size.height - _scrollView.contentSize.height;
             if (viewOffset > 0 && _downView.pullState != CYPullStateLoading) {
                 if (viewOffset > _downView.contentHeight) {
-                    if (!_scrollView.isDragging) {
+                    if (!_scrollView.tracking) {
                         [_downView setPullState:CYPullStateLoading];
                     } else {
                         [_downView setPullState:CYPullStateHitTheEnd];
