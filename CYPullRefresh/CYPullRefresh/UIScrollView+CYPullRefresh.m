@@ -26,6 +26,7 @@
 @property (nonatomic, assign) BOOL pullUpEnable;
 @property (nonatomic, assign) BOOL pullDownEnable;
 @property (nonatomic, assign) CYLoadState currentLoadState;
+@property (nonatomic, assign) CGFloat topContentInset;
 
 @end
 
@@ -111,7 +112,7 @@
     }
 }
 
-#pragma mark - helper
+#pragma mark - scroll
 
 - (void)setupObserver
 {
@@ -138,10 +139,23 @@
 
 - (void)cy_scrollViewDidScroll
 {
+    [self cy_pullDownScrollViewDidScroll];
+    [self cy_pullUpScrollViewDidScroll];
+}
+
+- (void)cy_scrollViewDidEndDragging
+{
+    [self cy_pullDownScrollViewDidEndDragging];
+    [self cy_pullUpScrollViewDidEndDragging];
+}
+
+#pragma mark - pull up
+
+- (void)cy_pullUpScrollViewDidScroll
+{
     BOOL isLoading = (self.currentLoadState != CYLoadStateNone);
     CGFloat topInset = _scrollView.contentInset.top;
     
-    // handle pull up event
     if (self.pullUpEnable && _downView.pullState != CYPullStateNoMore && !isLoading) {
         if (_scrollView.dragging && _scrollView.contentSize.height < _scrollView.frame.size.height) {
             CGFloat viewOffset = _scrollView.contentOffset.y + topInset - _downView.contentHeight;
@@ -165,8 +179,28 @@
             }
         }
     }
+}
+
+- (void)cy_pullUpScrollViewDidEndDragging
+{
+    BOOL isLoading = (self.currentLoadState != CYLoadStateNone);
+    CGFloat topInset = _scrollView.contentInset.top;
     
-    // handle pull down event
+    if (self.pullUpEnable && _downView.pullState != CYPullStateNoMore && !isLoading) {
+        CGFloat viewOffset = _scrollView.contentOffset.y + topInset - _downView.contentHeight;
+        if (viewOffset >= 0 && _downView.pullState == CYPullStateHitTheEnd) {
+            [_downView setPullState:CYPullStateLoading];
+        }
+    }
+}
+
+#pragma mark - pull down
+
+- (void)cy_pullDownScrollViewDidScroll
+{
+    BOOL isLoading = (self.currentLoadState != CYLoadStateNone);
+    CGFloat topInset = _scrollView.contentInset.top;
+    
     if (self.pullDownEnable && !isLoading) {
         CGFloat viewOffset = _scrollView.contentOffset.y;
         if (viewOffset < - _upView.contentHeight - topInset  && _scrollView.dragging) {
@@ -174,36 +208,72 @@
         } else if (viewOffset > - _upView.contentHeight - topInset && viewOffset < 0 && _scrollView.dragging) {
             [_upView setPullState:CYPullStatePulling];
         }
+    } else if (isLoading && self.pullDownEnable) {
+        // fix problem:
+        // http://stackoverflow.com/questions/5466097/section-headers-in-uitableview-when-inset-of-tableview-is-changed
+        // http://stackoverflow.com/questions/4365297/issue-scrolling-table-view-with-content-inset
+        if (_scrollView.contentOffset.y > - self.upView.contentHeight && _scrollView.contentOffset.y < 0.0) {
+            [self updateTopContentInset:MIN(-_scrollView.contentOffset.y, self.upView.contentHeight)];
+        } else if (_scrollView.contentOffset.y >= 0.0) {
+            [self updateTopContentInset:0];
+        }
     }
 }
 
-- (void)cy_scrollViewDidEndDragging
+- (void)cy_pullDownScrollViewDidEndDragging
 {
     BOOL isLoading = (self.currentLoadState != CYLoadStateNone);
     CGFloat topInset = _scrollView.contentInset.top;
     
-    // handle pull up event
-    if (self.pullUpEnable && _downView.pullState != CYPullStateNoMore && !isLoading) {
-        CGFloat viewOffset = _scrollView.contentOffset.y + topInset - _downView.contentHeight;
-        if (viewOffset >= 0 && _downView.pullState == CYPullStateHitTheEnd) {
-            [_downView setPullState:CYPullStateLoading];
-        }
-    }
-    
-    // handle pull down event
     if (self.pullDownEnable && !isLoading) {
         CGFloat viewOffset = _scrollView.contentOffset.y;
         if (viewOffset < - _upView.contentHeight - topInset) {
             [_upView setPullState:CYPullStateLoading];
+            [self setTopContentInsetWithLoading:YES animationBlock:^{}];
         } else if (!isLoading) {
             [_upView setPullState:CYPullStateNormal];
         }
     }
 }
 
+- (void)updateTopContentInset:(CGFloat)topContentInset
+{
+    if (fabs(topContentInset - _topContentInset) < 0.01) {
+        return;
+    }
+    
+    CGFloat originTopInset = _topContentInset;
+    _topContentInset = topContentInset;
+    
+    UIEdgeInsets insets = _scrollView.contentInset;
+    insets = UIEdgeInsetsMake(insets.top - originTopInset + topContentInset, 0, insets.bottom, 0);
+    [_scrollView setContentInset:insets];
+}
+
+- (void)setTopContentInsetWithLoading:(BOOL)isLoading animationBlock:(void (^)())animationBlock
+{
+    if (isLoading) {
+        [UIView animateWithDuration:0.2f animations:^(){
+            [self updateTopContentInset:self.upView.contentHeight];
+            animationBlock();
+        }];
+    } else {
+        [UIView animateWithDuration:0.4f animations:^{
+            [self updateTopContentInset:0];
+            animationBlock();
+        }];
+    }
+}
+
 @end
 
 #pragma mark - UIScrollView+WMPullLoad -
+
+@interface UIScrollView (CYPullRefreshInner)
+
+@property (nonatomic, strong) CYPullRefreshManager *cy_pullRefreshManager;
+
+@end
 
 static const char *cy_pullRefreshManagerKey = "cy_pullRefreshManagerKey";
 
@@ -245,16 +315,6 @@ static const char *cy_pullRefreshManagerKey = "cy_pullRefreshManagerKey";
     __weak typeof(&*self) weakself = self;
     [topView setTriggerLoadingStateBlock:^(UIView<CYPullRefreshViewProtocol> *topView, BOOL animated) {
         [weakself.cy_pullRefreshManager loadWithState:CYLoadStatePullDown];
-        void (^block)() = ^{
-            UIEdgeInsets insets = weakself.contentInset;
-            insets = UIEdgeInsetsMake(insets.top + weakself.cy_pullRefreshManager.upView.contentHeight, 0, insets.bottom, 0);
-            [weakself setContentInset:insets];
-        };
-        if (animated) {
-            [UIView animateWithDuration:0.2f animations:block];
-        } else {
-            block();
-        }
     }];
     self.cy_pullRefreshManager.upView = topView;
     [self addSubview:self.cy_pullRefreshManager.upView];
@@ -300,11 +360,7 @@ static const char *cy_pullRefreshManagerKey = "cy_pullRefreshManagerKey";
 - (void)cy_stopLoad
 {
     if (self.cy_pullRefreshManager.currentLoadState == CYLoadStatePullDown && self.cy_pullRefreshManager.upView.pullState == CYPullStateLoading) {
-        [UIView animateWithDuration:0.2 animations:^{
-            UIEdgeInsets insets = self.contentInset;
-            insets = UIEdgeInsetsMake(insets.top - self.cy_pullRefreshManager.upView.contentHeight, 0, insets.bottom, 0);
-            [self setContentInset:insets];
-        }];
+        [self.cy_pullRefreshManager setTopContentInsetWithLoading:NO animationBlock:^{}];
         
         [self.cy_pullRefreshManager.upView setPullState:CYPullStateNormal];
         [self.cy_pullRefreshManager setCurrentLoadState:CYLoadStateNone];
@@ -333,15 +389,14 @@ static const char *cy_pullRefreshManagerKey = "cy_pullRefreshManagerKey";
     }
     
     if (state == CYLoadStatePullDown && [self.cy_pullRefreshManager pullDownEnable]) {
-        [UIView animateWithDuration:0.2 animations:^{
-            self.contentOffset = CGPointMake(0, - self.contentInset.top);
-        }];
         [self.cy_pullRefreshManager.upView setPullState:CYPullStateLoading animated:NO];
-    } else if (state == CYLoadStatePullUp && [self.cy_pullRefreshManager pullUpEnable]) {
-        [UIView animateWithDuration:0.2 animations:^{
-            self.contentOffset = CGPointMake(0, self.contentInset.bottom + self.contentSize.height);
+        __weak typeof(self) weakself = self;
+        [self.cy_pullRefreshManager setTopContentInsetWithLoading:YES animationBlock:^{
+            weakself.contentOffset = CGPointMake(0, - weakself.contentInset.top - weakself.cy_pullRefreshManager.upView.contentHeight);
         }];
+    } else if (state == CYLoadStatePullUp && [self.cy_pullRefreshManager pullUpEnable]) {
         [self.cy_pullRefreshManager.downView setPullState:CYPullStateLoading animated:NO];
+        self.contentOffset = CGPointMake(0, self.contentInset.bottom + self.contentSize.height);
     }
 }
 
