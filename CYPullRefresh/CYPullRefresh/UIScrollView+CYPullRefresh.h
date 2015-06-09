@@ -47,13 +47,18 @@ typedef void (^CYPullRefreshBlock)();
 
 - (void)cy_stopLoad;
 - (void)cy_triggerLoadWithState:(CYLoadState)state;
+- (CYLoadState)cy_getLoadState;
 
 - (void)cy_setHasMoreData:(BOOL)hasMore;
 - (BOOL)cy_hasMoreData;
 
 - (void)cy_setPullUpEnable:(BOOL)enable;
 - (BOOL)cy_getPullUpEnable;
+
 - (void)cy_setPullDownEnable:(BOOL)enable;
 - (BOOL)cy_getPullDownEnable;
+
+- (void)cy_setAdjustInsetForSectionHeader:(BOOL)adjust;
+- (BOOL)cy_adjustInstForSectionHeader;
 
 @end

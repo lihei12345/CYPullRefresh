@@ -27,6 +27,7 @@
 @property (nonatomic, assign) BOOL pullDownEnable;
 @property (nonatomic, assign) CYLoadState currentLoadState;
 @property (nonatomic, assign) CGFloat topContentInset;
+@property (nonatomic, assign) BOOL adjustInstForSectionHeader;
 
 @end
 
@@ -208,7 +209,7 @@
         } else if (viewOffset > - _upView.contentHeight - topInset && viewOffset < 0 && _scrollView.dragging) {
             [_upView setPullState:CYPullStatePulling];
         }
-    } else if (isLoading && self.pullDownEnable) {
+    } else if (isLoading && self.pullDownEnable && self.adjustInstForSectionHeader) {
         // fix problem:
         // http://stackoverflow.com/questions/5466097/section-headers-in-uitableview-when-inset-of-tableview-is-changed
         // http://stackoverflow.com/questions/4365297/issue-scrolling-table-view-with-content-inset
@@ -229,7 +230,7 @@
         CGFloat viewOffset = _scrollView.contentOffset.y;
         if (viewOffset < - _upView.contentHeight - topInset) {
             [_upView setPullState:CYPullStateLoading];
-            [self setTopContentInsetWithLoading:YES animationBlock:^{}];
+            [self setTopContentInsetWithLoading:YES];
         } else if (!isLoading) {
             [_upView setPullState:CYPullStateNormal];
         }
@@ -250,17 +251,15 @@
     [_scrollView setContentInset:insets];
 }
 
-- (void)setTopContentInsetWithLoading:(BOOL)isLoading animationBlock:(void (^)())animationBlock
+- (void)setTopContentInsetWithLoading:(BOOL)isLoading
 {
     if (isLoading) {
         [UIView animateWithDuration:0.2f animations:^(){
             [self updateTopContentInset:self.upView.contentHeight];
-            animationBlock();
         }];
     } else {
         [UIView animateWithDuration:0.4f animations:^{
             [self updateTopContentInset:0];
-            animationBlock();
         }];
     }
 }
@@ -360,7 +359,7 @@ static const char *cy_pullRefreshManagerKey = "cy_pullRefreshManagerKey";
 - (void)cy_stopLoad
 {
     if (self.cy_pullRefreshManager.currentLoadState == CYLoadStatePullDown && self.cy_pullRefreshManager.upView.pullState == CYPullStateLoading) {
-        [self.cy_pullRefreshManager setTopContentInsetWithLoading:NO animationBlock:^{}];
+        [self.cy_pullRefreshManager setTopContentInsetWithLoading:NO];
         
         [self.cy_pullRefreshManager.upView setPullState:CYPullStateNormal];
         [self.cy_pullRefreshManager setCurrentLoadState:CYLoadStateNone];
@@ -390,14 +389,17 @@ static const char *cy_pullRefreshManagerKey = "cy_pullRefreshManagerKey";
     
     if (state == CYLoadStatePullDown && [self.cy_pullRefreshManager pullDownEnable]) {
         [self.cy_pullRefreshManager.upView setPullState:CYPullStateLoading animated:NO];
-        __weak typeof(self) weakself = self;
-        [self.cy_pullRefreshManager setTopContentInsetWithLoading:YES animationBlock:^{
-            weakself.contentOffset = CGPointMake(0, - weakself.contentInset.top - weakself.cy_pullRefreshManager.upView.contentHeight);
-        }];
+        self.contentOffset = CGPointMake(0, - self.contentInset.top - self.cy_pullRefreshManager.upView.contentHeight);
+        [self.cy_pullRefreshManager setTopContentInsetWithLoading:YES];
     } else if (state == CYLoadStatePullUp && [self.cy_pullRefreshManager pullUpEnable]) {
         [self.cy_pullRefreshManager.downView setPullState:CYPullStateLoading animated:NO];
         self.contentOffset = CGPointMake(0, self.contentInset.bottom + self.contentSize.height);
     }
+}
+
+- (CYLoadState)cy_getLoadState
+{
+    return self.cy_pullRefreshManager.currentLoadState;
 }
 
 - (void)cy_setPullUpEnable:(BOOL)enable
@@ -429,6 +431,16 @@ static const char *cy_pullRefreshManagerKey = "cy_pullRefreshManagerKey";
 - (BOOL)cy_getPullDownEnable
 {
     return self.cy_pullRefreshManager.pullDownEnable;
+}
+
+- (void)cy_setAdjustInsetForSectionHeader:(BOOL)adjust
+{
+    self.cy_pullRefreshManager.adjustInstForSectionHeader = adjust;
+}
+
+- (BOOL)cy_adjustInstForSectionHeader
+{
+    return self.cy_pullRefreshManager.adjustInstForSectionHeader;
 }
 
 @end
