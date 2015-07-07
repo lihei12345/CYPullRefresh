@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name         = 'CYPullRefresh'
-  spec.version      = '1.0'
+  spec.version      = '1.1'
   spec.authors      = 'Jason li'
   spec.homepage     = 'http://blog.csdn.net/lihei12345'
   spec.source       = { :git => 'https://github.com/lihei12345/CYPullRefresh.git', :tag => "#{spec.version}"}
