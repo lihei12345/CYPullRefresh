@@ -156,6 +156,7 @@
 {
     BOOL isLoading = (self.currentLoadState != CYLoadStateNone);
     CGFloat topInset = _scrollView.contentInset.top;
+    CGFloat bottomInset = _scrollView.contentInset.bottom;
     
     if (self.pullUpEnable && _downView.pullState != CYPullStateNoMore && !isLoading) {
         if (_scrollView.dragging && _scrollView.contentSize.height < _scrollView.frame.size.height) {
@@ -166,7 +167,7 @@
                 [_downView setPullState:CYPullStatePulling];
             }
         } else if (_scrollView.contentSize.height >= _scrollView.frame.size.height) {
-            CGFloat viewOffset = _scrollView.contentOffset.y + topInset + _scrollView.frame.size.height - _scrollView.contentSize.height;
+            CGFloat viewOffset = _scrollView.contentOffset.y + _scrollView.frame.size.height - _scrollView.contentSize.height - (bottomInset - _downView.contentHeight);
             if (viewOffset > 0 && _downView.pullState != CYPullStateLoading) {
                 if (viewOffset > _downView.contentHeight) {
                     if (!_scrollView.tracking) {
