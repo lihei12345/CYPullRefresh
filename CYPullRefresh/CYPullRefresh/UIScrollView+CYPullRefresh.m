@@ -366,12 +366,12 @@ static const char *cy_pullRefreshManagerKey = "cy_pullRefreshManagerKey";
         [self.cy_pullRefreshManager setCurrentLoadState:CYLoadStateNone];
     } else if (self.cy_pullRefreshManager.currentLoadState == CYLoadStatePullUp && self.cy_pullRefreshManager.downView.pullState == CYPullStateLoading) {
         if (self.cy_pullRefreshManager.downView.pullState != CYPullStateNoMore) {
-            if (self.contentSize.height >= self.frame.size.height) {
-                CGFloat y = self.contentSize.height - self.frame.size.height - self.contentInset.top;
-                if (y <= self.contentOffset.y) {
-                    [self setContentOffset:CGPointMake(0, y) animated:NO];
-                }
-            }
+//            if (self.contentSize.height >= self.frame.size.height) {
+//                CGFloat y = self.contentSize.height - self.frame.size.height - self.contentInset.top;
+//                if (y <= self.contentOffset.y) {
+//                    [self setContentOffset:CGPointMake(0, y) animated:NO];
+//                }
+//            }
             if (self.cy_pullRefreshManager.downView.pullState != CYPullStateNoMore) {
                 [self.cy_pullRefreshManager.downView setPullState:CYPullStateNormal];
             }
